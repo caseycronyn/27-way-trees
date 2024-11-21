@@ -9,6 +9,7 @@
 
 // 26 letters, plus the '
 #define ALPHA 27
+#define MAXSTR 50
 
 // You'd normally not expose this structure
 // to the user, and it's members should *never*

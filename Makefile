@@ -18,4 +18,15 @@ rund: t27_d
 	./t27_d
 
 clean:
-	rm -f t27 t27_d
+	rm -f t27 t27_d t27t
+
+# additional
+# test
+t27t-nofl: t27.c t27.h test.c
+	gcc test.c t27.c -o t27t-nofl
+
+t27t: t27.c t27.h test.c
+	gcc test.c t27.c $(OPTIM) -o t27t
+
+t27_dt: t27.c t27.h test.c
+	gcc test.c t27.c $(DEBUG) -o t27_dt

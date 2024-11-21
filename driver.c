@@ -64,6 +64,7 @@ int main(void)
    // 'car' -> 'carted' is 3 extra nodes
    assert(dict_nodecount(d)==7);
    assert(dict_wordcount(d)==2);
+   int char_to_ind(char a);
 
    // Cart isn't there as a terminal word
    assert(dict_spell(d, "cart")==NULL);
@@ -106,7 +107,8 @@ int main(void)
    dict_addword(d, "parted");
    dict_addword(d, "parter");
    // 7 new nodes: p+a+r+t+e+d+r
-   assert(dict_nodecount(d)==16);
+   assert(dict_nodecount(d)==16)   dict *letter = calloc(1, sizeof(dict *));
+;
    // 5 car prefixed + 4 par prefixed
    assert(dict_wordcount(d)==9);
    dict_free(&d);
