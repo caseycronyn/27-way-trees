@@ -20,17 +20,16 @@ dict* dict_init(void)
 
 bool dict_addword(dict* p, const char* wd)
 {
-   dict *cur = malloc(sizeof(dict));
-   dict *tmp = malloc(sizeof(dict));
-   cur = p;
+   dict *tmp = NULL;
+   dict *cur = p;
    int length = strlen(wd);
    for (int i = 0; i < length; i++) {
+      // if (cur)
       tmp = add_letter(cur, wd[i]);
       cur = tmp;
    }
-   cur->dwn[length-1]->terminal = true;
-   free(cur);
-   free(tmp);
+   cur->terminal = true;
+   return true;
 }
 
 dict *add_letter(dict *p, char C)
@@ -77,14 +76,18 @@ void print_addresses(dict* d)
 
 void dict_free(dict** d)
 {
-   // free all memory recursively from leaf to root.
-   if ((*d)->terminal == true) {
+   if ((*d)->terminal) {
+      free(*d);
+      *d = NULL;
       return;
    }
-   // for (int i = 0; i < ALPHA; i++) {
-// 
-   // }
-   // printf("%d\n", (*d)->dwn[0]->terminal);
+   for (int i = 0; i < ALPHA; i++) {
+      if ((*d)->dwn[i] != NULL) {
+         dict_free(&((*d)->dwn[i]));
+      }
+   }
+   free(*d);
+   *d = NULL;
 }
 
 // int dict_wordcount(const dict* p)

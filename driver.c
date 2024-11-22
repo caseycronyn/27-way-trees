@@ -107,8 +107,8 @@ int main(void)
    dict_addword(d, "parted");
    dict_addword(d, "parter");
    // 7 new nodes: p+a+r+t+e+d+r
-   assert(dict_nodecount(d)==16)   dict *letter = calloc(1, sizeof(dict *));
-;
+   assert(dict_nodecount(d)==16);
+   dict *letter = calloc(1, sizeof(dict *));
    // 5 car prefixed + 4 par prefixed
    assert(dict_wordcount(d)==9);
    dict_free(&d);
