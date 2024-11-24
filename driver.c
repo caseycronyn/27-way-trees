@@ -5,7 +5,7 @@
 int main(void)
 {
    dict* d = NULL;
-   // char str[MAXSTR];
+   char str[MAXSTR];
 
 /* !!!!!!!!!!!!!!!!!!!!*/
 /* The basic functions */
@@ -30,9 +30,9 @@ int main(void)
    // It's unsigned
    assert(dict_cmp(q2, q1)==7);
    // 2 steps up from 'carter' is 'cart'
-   // dict_autocomplete(d, "car", str);
+   dict_autocomplete(d, "car", str);
    // Most frequently stored word after car is car+t
-   // assert(strcmp(str, "t")==0);
+   assert(strcmp(str, "t")==0);
    dict_free(&d);
 
 /* A slightly different example */

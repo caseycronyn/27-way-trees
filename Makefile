@@ -30,3 +30,6 @@ t27t: t27.c t27.h test.c
 
 t27_dt: t27.c t27.h test.c
 	gcc test.c t27.c $(DEBUG) -o t27_dt
+
+t27-nf: t27.c t27.h driver.c
+	gcc driver.c t27.c -o t27-nf

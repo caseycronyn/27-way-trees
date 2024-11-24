@@ -6,3 +6,6 @@ for letters in word:
             move to next position
         else:
             add to tree
+
+
+__attribute__((unused))

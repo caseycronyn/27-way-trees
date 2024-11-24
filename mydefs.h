@@ -20,3 +20,15 @@ int char_to_ind(char a);
 
 // finds word. returns false if not found
 bool word_is_found(const dict* p, char c);
+
+// returns pointer to node of most frequent word ending based on starting node and max frequency. return null if it fails
+dict* most_freq_end(dict* cur, int max);
+
+// builds string in reverse
+char* build_string(dict* end, dict* prev, dict* start, char* str);
+
+// on the tin
+char* reverse_string(char* str);
+
+// indices to char.
+char ind_to_char(int a);

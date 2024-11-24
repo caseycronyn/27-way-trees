@@ -33,12 +33,19 @@ int main(void)
    // assert(dict_nodecount(d) == 5);
    dict_addword(d, "parted");
    assert(dict_nodecount(d) == 7);
-   dict_addword(d, "parter");
+   dict_addword(d, "partay");
+   dict_addword(d, "partay");
+   // t = 19 
+
+   char str[MAXSTR];
+
+   dict_autocomplete(d, "part", str);
+   // printf("%s", str);
    // printf("%d\n", dict_wordcount(d));
    // assert(dict_wordcount(d) == 5);
    // printf("%d\n", dict_nodecount(d));
-   assert(dict_nodecount(d) == 8);
-   printf("%d\n", dict_mostcommon(d));
+   // assert(dict_nodecount(d) == 8);
+   // printf("%d\n", dict_mostcommon(d));
    // dict_mostcommon(d);
    dict_free(&d);
 

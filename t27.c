@@ -56,7 +56,7 @@ dict *add_letter(dict *p, int idx)
 int char_to_ind(char a)
 {
    int val;
-
+   
    if (a == '\'') {
       val = APOSPOS;
    }
@@ -160,19 +160,23 @@ dict* dict_spell(const dict* p, const char* str)
 
 int dict_mostcommon(const dict* p)
 {
-   int mo_fr, cur, call;
-   mo_fr = 0;
+   int mo_ov, cur, call, mo_cur_call;
+   mo_ov = 0;
+   // base case
    if (p == NULL) {
       return 0;
    }
    for (int i = 0; i < ALPHA; i++) {
       if (p->dwn[i] != NULL) {
          cur = p->dwn[i]->freq;
+         // recursive call
          call = dict_mostcommon(p->dwn[i]);
-         mo_fr = (cur > call) ? cur : call;
+         mo_cur_call = (cur > call) ? cur : call;
+         // update mo_ov if latest call is more
+         mo_ov = (mo_cur_call > mo_ov) ? mo_cur_call : mo_ov;
       }
    }
-   return mo_fr;
+   return mo_ov;
 }
 
 // CHALLENGE1. pointers are terminal nodes
@@ -192,18 +196,76 @@ unsigned dict_cmp(dict* p1, dict* p2)
 }
 
 // CHALLENGE2
-// void dict_autocomplete(const dict* p, const char* wd, char* ret)
-// {
-//    /*
-//    find end of word node
-//    search for node with highest frequency
-//    store it with a pointer
-//    */
-//    dict * cur = p;
-//    char idx;
-//    for (int i = 0; i < strlen(wd); i++) {
-//       idx = char_to_ind(wd[i]);
-//       cur = cur->dwn[idx];
-//    }
-//    ;
-// }
+void dict_autocomplete(const dict* p, const char* wd, char* ret)
+{
+   dict * cur = (dict *)p;
+   int idx;
+   int len = strlen(wd);
+   for (int i = 0; i < len; i++) {
+      if ((idx = char_to_ind(wd[i])) != -1) {
+         cur = cur->dwn[idx];
+      }
+   }
+   int max_fre = dict_mostcommon(cur);
+   // search for first occurence of most frequent word
+   dict* end = most_freq_end(cur, max_fre);
+   char buffer[MAXSTR];
+   ret = build_string(end->up, end, cur, buffer);
+   printf("%s\n", ret);
+   return;
+}
+
+dict* most_freq_end(dict* cur, int max)
+{
+   // go to ends of branches. record highest scoring frequency with pointer to location.
+   dict* tmp = cur;
+   if (tmp->freq == max) {
+      return tmp;
+   }
+   for (int i = 0; i < ALPHA; i++) {
+      if (tmp->dwn[i] != NULL) {
+         tmp = most_freq_end(tmp->dwn[i], max);
+      }
+   }
+   return tmp;
+}
+
+char* build_string(dict* end, dict* prev, dict* start, char* str)
+{
+   // base case
+   if (prev == start) {
+      return NULL;
+   }
+   int pos = -1;
+   static int strpos = 0;
+   char c;
+      // find character index in node below
+      for (int i = 0; i < ALPHA; i++) {
+         if (end->dwn[i] == prev) {
+            pos = i;
+         }
+      }
+      // recursive call
+      if ((c = ind_to_char(pos)) != -1) {
+         build_string(end->up, end, start, str);
+         str[strpos++] = c;
+         str[strpos] = '\0';
+      }
+   return str;
+}
+
+char ind_to_char(int ch)
+{
+   if ((ch >= 0) && (ch < APOSPOS)) {
+         ch += 'a';
+   }
+   else if (ch == APOSPOS) {
+         ch = '\'';
+   }
+   else {
+      ch = -1;
+   }
+   return (char)ch;
+}
+
+
