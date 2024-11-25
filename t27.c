@@ -9,10 +9,6 @@ dict* dict_init(void)
       printf("error: pointer is null\n");
       exit(EXIT_FAILURE);
    }
-   // head->dwn[0] = NULL;
-   // for (int i = 0; i < ALPHA-1; i++) {
-   //    head->dwn[i] = NULL;
-   // }
    return head;
 }
 
@@ -79,16 +75,6 @@ int char_to_ind(char a)
    return val;
 }
 
-// void print_addresses(dict* d)
-// {
-//    for (int i = 0; i < ALPHA; i++) {
-//       // printf("%2d: %10x\n", i, d->dwn[i]);
-//       if (d->dwn[i] != 0) {
-//          printf("%2d\n", i);
-//       }
-//    }
-// }
-
 void dict_free(dict** d)
 {
    // base case
@@ -149,7 +135,6 @@ dict* dict_spell(const dict* p, const char* str)
    for (int i = 0; i < length; i++) {
       if ((idx = char_to_ind(str[i])) != -1) {
          // is letter there?
-         // if not return false
          if (cur == NULL || cur->dwn[idx] == NULL) {
             return NULL;
          }
@@ -162,11 +147,6 @@ dict* dict_spell(const dict* p, const char* str)
    }
    return cur;
 }
-
-// bool letter_found(const dict* p, char c)
-// {
-
-// }
 
 int dict_mostcommon(const dict* p)
 {
@@ -189,26 +169,73 @@ int dict_mostcommon(const dict* p)
    return mo_ov;
 }
 
-// CHALLENGE1. pointers are terminal nodes
 unsigned dict_cmp(dict* p1, dict* p2)
 {
-   int l1, l2;
-   l1 = l2 = 0;
-   while (p1->up != NULL) {
-      l1++;
-      p1 = p1->up;
+   int l1 = dict_length(p1);
+   int l2 = dict_length(p2);
+   int result;
+   // on route & loop around. shorter
+   if (l1 > l2) {
+      result = on_route(p1, p2);
    }
-   while (p2->up != NULL) {
-      l2++;
-      p2 = p2->up;
+   else {
+      result = on_route(p2, p1);
    }
-   return l1 + l2;
+   // combined route. longer
+   if (result == -1) {
+      result = l1 + l2;
+   }
+   return result;
 }
 
-// CHALLENGE2
+int dict_length(dict* p)
+{
+   int l = 0;
+   while (p->up != NULL) {
+      l++;
+      p = p->up;
+   }
+   return l;
+}
+
+int on_route(dict* ld, dict *sd)
+{
+   int a = 0;
+   int b = 0;
+   dict* cur = ld;
+   while (cur->up != NULL) {
+      a++;
+      cur = cur->up;
+      if (cur == sd) {
+         return a;
+      }
+      // loop around
+      if ((b = node_shared(cur, sd)) != -1) {
+         return a + b;
+      }
+   }
+   return -1;
+}
+
+int node_shared(dict* node, dict* sd)
+{
+   int a = 0;
+   while (sd->up != NULL) {
+      sd = sd->up;
+      a++;
+      if (node == sd) {
+         return a;
+      }
+   }
+   return -1;
+}
+
 void dict_autocomplete(const dict* p, const char* wd, char* ret)
 {
    dict * cur = (dict *)p;
+   if (cur == NULL) {
+      return;
+   }
    int idx;
    int len = strlen(wd);
    // move cur to end of word in tree
@@ -220,90 +247,76 @@ void dict_autocomplete(const dict* p, const char* wd, char* ret)
    int max_fre = dict_mostcommon(cur);
    // search for first occurence of most frequent word
    dict* end = most_freq_end(cur, max_fre);
+   if (end == NULL) {
+      printf("error: end is null\n");
+      exit(EXIT_FAILURE);
+   }
    char buffer[MAXSTR];
    build_string(end, cur, buffer);
    strcpy(ret, buffer);
-   // printf("%s\n", ret);
    return;
 }
-
 dict* most_freq_end(dict* cur, int max)
 {
-   // go to ends of branches. record highest scoring frequency with pointer to location.
-   dict* tmp = cur;
+   dict* result = NULL;
+
+   if (cur->freq == max) {
+      result = cur;
+   }
+
    for (int i = 0; i < ALPHA; i++) {
-      if (tmp->dwn[i] != NULL) {
-         tmp = most_freq_end(tmp->dwn[i], max);
+      if (cur->dwn[i] != NULL) {
+         dict* temp = most_freq_end(cur->dwn[i], max);
+         if (temp != NULL) {
+               return temp;
+         }
       }
    }
-   if (tmp->freq == max) {
-      return tmp;
-   }
-   return NULL;
+
+   return result;
 }
-// dict* most_freq_end(dict* cur, int max)
-// {
-//    // go to ends of branches. record highest scoring frequency with pointer to location.
-//    dict* tmp = cur;
-//    if (tmp->freq == max) {
-//       return tmp;
-//    }
-//    for (int i = 0; i < ALPHA; i++) {
-//       if (tmp->dwn[i] != NULL) {
-//          tmp = most_freq_end(tmp->dwn[i], max);
-//       }
-//    }
-//    return tmp;
-// }
 
 char* build_string(dict* cur, dict* start, char* str)
 {
-   // base case
-   if (cur == start) {
-      return NULL;
-   }
-   static int strpos = 0;
-   char c = dict_to_char(cur);
-   // recursive call
-   build_string(cur->up, start, str);
-   str[strpos++] = c;
-   str[strpos] = '\0';
-   return str;
+    static int strpos = 0;
+    static bool isTopCall = true;
+    if (cur == NULL || start == NULL) {
+        return NULL;
+    }
+    // base case
+    if (cur == start) {
+        if (isTopCall) {
+            strpos = 0;
+        }
+        return NULL;
+    }
+    if (isTopCall) {
+        strpos = 0;
+    }
+    char c = dict_to_char(cur);
+    // recursive call
+    if (cur->up) {
+        isTopCall = false;
+        build_string(cur->up, start, str);
+        isTopCall = true;
+    }
+    str[strpos++] = c;
+    str[strpos] = '\0';
+    return str;
 }
 
-// char* build_string(dict* end, dict* prev, dict* start, char* str)
-// {
-//    // base case
-//    if (prev == start) {
-//       return NULL;
-//    }
-//    int pos = -1;
-//    static int strpos = 0;
-//    char c;
-//       // find character index in node below
-//       for (int i = 0; i < ALPHA; i++) {
-//          if (end->dwn[i] == prev) {
-//             pos = i;
-//          }
-//       }
-//       // recursive call
-//       if ((c = ind_to_char(pos)) != -1) {
-//          build_string(end->up, end, start, str);
-//          str[strpos++] = c;
-//          str[strpos] = '\0';
-//       }
-//    return str;
-// }
-
-// given a dict *, return it's character
 char dict_to_char(dict * d)
 {
+   if (d == NULL) {
+      return -1;
+   }
    int pos;
    char c;
-   dict * prev = d->up;
-   // find character index in node below
+   dict * prev;
+   prev = d->up;
+   // find character value of node
    for (int i = 0; i < ALPHA; i++) {
-      if (prev->dwn[i] == d) {
+      if (prev != NULL && prev->dwn[i] != NULL && prev->dwn[i] == d) {
          pos = i;
       }
    }
@@ -327,5 +340,34 @@ char ind_to_char(int ch)
 
 void test(void)
 {
-   ;
+   assert(char_to_ind('a') == 0);
+   assert(char_to_ind('\'') == 26);
+   assert(char_to_ind('x') == 23);
+
+   assert(ind_to_char(0) == 'a');
+   assert(ind_to_char(26) == '\'');
+   assert(ind_to_char(23) == 'x');
+
+   assert(dict_nodecount(NULL)==0);
+
+   dict* d = dict_init();
+
+   dict_addword(d, "par");
+   dict_addword(d, "car");
+
+   dict_addword(d, "part");
+   dict_addword(d, "parted");
+   assert(dict_nodecount(d) == 10);
+   assert(dict_to_char(d->dwn[15]) == 'p');
+   assert(dict_to_char(d->dwn[2]) == 'c');
+
+   dict_addword(d, "partay");
+   dict_addword(d, "partay");
+
+   char str[MAXSTR];
+
+   dict_autocomplete(d, "part", str);
+   dict_free(&d);
+
+   free(d);
 }

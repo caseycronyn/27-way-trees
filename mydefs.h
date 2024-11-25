@@ -29,9 +29,18 @@ dict* most_freq_end(dict* cur, int max);
 char* build_string(dict* cur, dict* start, char* str);
 
 // on the tin
-char* reverse_string(char* str);
+// char* reverse_string(char* str);
 
 // indices to char.
 char ind_to_char(int a);
 
+// given a dict *, return it's character. -1 if error
 char dict_to_char(dict * d);
+
+int dict_length(dict* p);
+
+// calculates if the route is on the same branch or branches off from the same one. -1 for false
+int on_route(dict* lp, dict *sp);
+
+// return node position from terminal in sd if node exists within, else -1
+int node_shared(dict* node, dict* sd);
