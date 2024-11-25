@@ -1,4 +1,5 @@
 #define APOSPOS 26
+#define MAXSTR 50
 
 /*
 adds a letter to the tree, allocating space.
@@ -25,10 +26,12 @@ bool word_is_found(const dict* p, char c);
 dict* most_freq_end(dict* cur, int max);
 
 // builds string in reverse
-char* build_string(dict* end, dict* prev, dict* start, char* str);
+char* build_string(dict* cur, dict* start, char* str);
 
 // on the tin
 char* reverse_string(char* str);
 
 // indices to char.
 char ind_to_char(int a);
+
+char dict_to_char(dict * d);

@@ -1,6 +1,7 @@
 #include "t27.h"
 #include "mydefs.h"
 
+//TODO replace code blocks with dict_to_char
 dict* dict_init(void)
 {
    dict *head = calloc(1, sizeof(dict));
@@ -17,6 +18,9 @@ dict* dict_init(void)
 
 bool dict_addword(dict* p, const char* wd)
 {
+   if (p== NULL || wd == NULL) {
+      return false;
+   }
    int ind;
    dict *cur = p;
    int length = strlen(wd);
@@ -33,11 +37,14 @@ bool dict_addword(dict* p, const char* wd)
          }
       }
    }
+   cur->freq++;
    // first occurence
    if (!cur->terminal) {
       cur->terminal = true;
    }
-   cur->freq++;
+   else {
+      return false;
+   }
    return true;
 }
 
@@ -133,6 +140,9 @@ int dict_nodecount(const dict* p)
 
 dict* dict_spell(const dict* p, const char* str)
 {
+   if (p == NULL || str == NULL) {
+      return NULL;
+   }
    int idx;
    dict *cur = (dict *)p;
    int length = strlen(str);
@@ -201,6 +211,7 @@ void dict_autocomplete(const dict* p, const char* wd, char* ret)
    dict * cur = (dict *)p;
    int idx;
    int len = strlen(wd);
+   // move cur to end of word in tree
    for (int i = 0; i < len; i++) {
       if ((idx = char_to_ind(wd[i])) != -1) {
          cur = cur->dwn[idx];
@@ -210,8 +221,9 @@ void dict_autocomplete(const dict* p, const char* wd, char* ret)
    // search for first occurence of most frequent word
    dict* end = most_freq_end(cur, max_fre);
    char buffer[MAXSTR];
-   ret = build_string(end->up, end, cur, buffer);
-   printf("%s\n", ret);
+   build_string(end, cur, buffer);
+   strcpy(ret, buffer);
+   // printf("%s\n", ret);
    return;
 }
 
@@ -219,39 +231,84 @@ dict* most_freq_end(dict* cur, int max)
 {
    // go to ends of branches. record highest scoring frequency with pointer to location.
    dict* tmp = cur;
-   if (tmp->freq == max) {
-      return tmp;
-   }
    for (int i = 0; i < ALPHA; i++) {
       if (tmp->dwn[i] != NULL) {
          tmp = most_freq_end(tmp->dwn[i], max);
       }
    }
-   return tmp;
+   if (tmp->freq == max) {
+      return tmp;
+   }
+   return NULL;
 }
+// dict* most_freq_end(dict* cur, int max)
+// {
+//    // go to ends of branches. record highest scoring frequency with pointer to location.
+//    dict* tmp = cur;
+//    if (tmp->freq == max) {
+//       return tmp;
+//    }
+//    for (int i = 0; i < ALPHA; i++) {
+//       if (tmp->dwn[i] != NULL) {
+//          tmp = most_freq_end(tmp->dwn[i], max);
+//       }
+//    }
+//    return tmp;
+// }
 
-char* build_string(dict* end, dict* prev, dict* start, char* str)
+char* build_string(dict* cur, dict* start, char* str)
 {
    // base case
-   if (prev == start) {
+   if (cur == start) {
       return NULL;
    }
-   int pos = -1;
    static int strpos = 0;
-   char c;
-      // find character index in node below
-      for (int i = 0; i < ALPHA; i++) {
-         if (end->dwn[i] == prev) {
-            pos = i;
-         }
-      }
-      // recursive call
-      if ((c = ind_to_char(pos)) != -1) {
-         build_string(end->up, end, start, str);
-         str[strpos++] = c;
-         str[strpos] = '\0';
-      }
+   char c = dict_to_char(cur);
+   // recursive call
+   build_string(cur->up, start, str);
+   str[strpos++] = c;
+   str[strpos] = '\0';
    return str;
+}
+
+// char* build_string(dict* end, dict* prev, dict* start, char* str)
+// {
+//    // base case
+//    if (prev == start) {
+//       return NULL;
+//    }
+//    int pos = -1;
+//    static int strpos = 0;
+//    char c;
+//       // find character index in node below
+//       for (int i = 0; i < ALPHA; i++) {
+//          if (end->dwn[i] == prev) {
+//             pos = i;
+//          }
+//       }
+//       // recursive call
+//       if ((c = ind_to_char(pos)) != -1) {
+//          build_string(end->up, end, start, str);
+//          str[strpos++] = c;
+//          str[strpos] = '\0';
+//       }
+//    return str;
+// }
+
+// given a dict *, return it's character
+char dict_to_char(dict * d)
+{
+   int pos;
+   char c;
+   dict * prev = d->up;
+   // find character index in node below
+   for (int i = 0; i < ALPHA; i++) {
+      if (prev->dwn[i] == d) {
+         pos = i;
+      }
+   }
+   c = ind_to_char(pos);
+   return c;
 }
 
 char ind_to_char(int ch)
@@ -268,4 +325,7 @@ char ind_to_char(int ch)
    return (char)ch;
 }
 
-
+void test(void)
+{
+   ;
+}

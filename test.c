@@ -4,9 +4,13 @@
 // add to t27.c
 int main(void)
 {
-   assert(char_to_ind('A') == 0);
+   assert(char_to_ind('a') == 0);
    assert(char_to_ind('\'') == 26);
    assert(char_to_ind('x') == 23);
+
+   assert(ind_to_char(0) == 'a');
+   assert(ind_to_char(26) == '\'');
+   assert(ind_to_char(23) == 'x');
 
    assert(dict_nodecount(NULL)==0);
 
@@ -21,10 +25,11 @@ int main(void)
 
    // dict_addword(d, "A\'x");
    dict_addword(d, "par");
+   dict_addword(d, "car");
    // dict_addword(d, "par");
    // printf("%d\n", dict_wordcount(d));
 
-   // 15, 0, 17
+   // p=15, a=0, r=17
    // assert(dict_nodecount(d) == 4);
    // printf("%d\n", dict_nodecount(d));
    dict_addword(d, "part");
@@ -32,7 +37,10 @@ int main(void)
    // printf("%d\n", dict_nodecount(d));
    // assert(dict_nodecount(d) == 5);
    dict_addword(d, "parted");
-   assert(dict_nodecount(d) == 7);
+   assert(dict_nodecount(d) == 10);
+   assert(dict_to_char(d->dwn[15]) == 'p');
+   assert(dict_to_char(d->dwn[2]) == 'c');
+
    dict_addword(d, "partay");
    dict_addword(d, "partay");
    // t = 19 
@@ -40,7 +48,7 @@ int main(void)
    char str[MAXSTR];
 
    dict_autocomplete(d, "part", str);
-   // printf("%s", str);
+   // printf("%s\n", str);
    // printf("%d\n", dict_wordcount(d));
    // assert(dict_wordcount(d) == 5);
    // printf("%d\n", dict_nodecount(d));
