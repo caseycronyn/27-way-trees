@@ -1,0 +1,3 @@
+For my extension, I decided to use a binary tree. I started out with an unbalanced tree, but realised I was making the worst case run time as two of the text files were sorted. So I decided to implement a simple balancing method.
+
+I decided to use this method as I was interested to see the comparison between a binary tree vs a trie implementation, as they are both such common data structures in computer science. I predicted that the binary tree would be slower, with a O(n) worst case, but trading off better memory usage against the trie. I implemented some tests to see if this held true.
