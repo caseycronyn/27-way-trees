@@ -1,7 +1,6 @@
 #include "t27.h"
 #include "mydefs.h"
 
-//TODO replace code blocks with dict_to_char
 dict* dict_init(void)
 {
    dict *head = calloc(1, sizeof(dict));
@@ -17,23 +16,7 @@ bool dict_addword(dict* p, const char* wd)
    if (p== NULL || wd == NULL) {
       return false;
    }
-   int ind;
-   dict *cur = p;
-   int length = strlen(wd);
-   for (int i = 0; i < length; i++) {
-      // if char is valid
-      if ((ind = char_to_ind(wd[i])) != -1) {
-         // if empty add letter
-         if (cur->dwn[ind] == NULL) {
-            cur = add_letter(cur, ind);
-         }
-         // ptr chase to next position
-         else {
-            cur = cur->dwn[ind];
-         }
-      }
-   }
-   cur->freq++;
+   dict *cur = add_letters(p, wd);
    // first occurence
    if (!cur->terminal) {
       cur->terminal = true;
@@ -42,6 +25,27 @@ bool dict_addword(dict* p, const char* wd)
       return false;
    }
    return true;
+}
+
+dict* add_letters(dict* c, const char* w)
+{
+   int ind;
+   int length = strlen(w);
+   for (int i = 0; i < length; i++) {
+      // if char is valid
+      if ((ind = char_to_ind(w[i])) != -1) {
+         // if empty add letter
+         if (c->dwn[ind] == NULL) {
+            c = add_letter(c, ind);
+         }
+         // ptr chase
+         else {
+            c = c->dwn[ind];
+         }
+      }
+   }
+   c->freq++;
+   return c;
 }
 
 dict *add_letter(dict *p, int idx)
@@ -59,7 +63,6 @@ dict *add_letter(dict *p, int idx)
 int char_to_ind(char a)
 {
    int val;
-   
    if (a == '\'') {
       val = APOSPOS;
    }
@@ -92,6 +95,7 @@ void dict_free(dict** d)
 int dict_wordcount(const dict* p)
 {
    int words = 0;
+   // base case
    if (p == NULL) {
       return words++;
    }
@@ -100,6 +104,7 @@ int dict_wordcount(const dict* p)
          if (p->dwn[i]->terminal) {
             words += p->dwn[i]->freq;
          }
+         // recursive. sums frequency count
          words += dict_wordcount(p->dwn[i]);
       }
    }
@@ -109,11 +114,13 @@ int dict_wordcount(const dict* p)
 int dict_nodecount(const dict* p)
 {
    int nodes = 0;
+   // base
    if (p == NULL) {
       return nodes++;
    }
    for (int i = 0; i < ALPHA; i++) {
       if (p->dwn[i] != NULL) {
+         // recursive. sums nodes
          nodes += dict_nodecount(p->dwn[i]);
       }
    }
@@ -129,6 +136,7 @@ dict* dict_spell(const dict* p, const char* str)
    dict *cur = (dict *)p;
    int length = strlen(str);
    for (int i = 0; i < length; i++) {
+      // if valid character
       if ((idx = char_to_ind(str[i])) != -1) {
          // is letter there?
          if (cur == NULL || cur->dwn[idx] == NULL) {
@@ -170,7 +178,7 @@ unsigned dict_cmp(dict* p1, dict* p2)
    int l1 = dict_length(p1);
    int l2 = dict_length(p2);
    int result;
-   // on route & loop around. shorter
+   // on route or loop around. shorter
    if (l1 > l2) {
       result = on_route(p1, p2);
    }
@@ -243,59 +251,59 @@ void dict_autocomplete(const dict* p, const char* wd, char* ret)
    int max_fre = dict_mostcommon(cur);
    // search for first occurence of most frequent word
    dict* end = most_freq_end(cur, max_fre);
-   if (end == NULL) {
-      printf("error: end is null\n");
-      exit(EXIT_FAILURE);
-   }
    char buffer[MAXSTR];
-   build_string(end, cur, buffer);
-   strcpy(ret, buffer);
+   // make string
+   if (build_string(end, cur, buffer) != NULL) {
+      strcpy(ret, buffer);
+   }
    return;
 }
+
 dict* most_freq_end(dict* cur, int max)
 {
+   dict* temp;
    dict* result = NULL;
-
+   // base
    if (cur->freq == max) {
       result = cur;
    }
-
    for (int i = 0; i < ALPHA; i++) {
       if (cur->dwn[i] != NULL) {
-         dict* temp = most_freq_end(cur->dwn[i], max);
+         // recursive. returns first found frequency match
+         temp = most_freq_end(cur->dwn[i], max);
          if (temp != NULL) {
                return temp;
          }
       }
    }
-
    return result;
 }
 
 char* build_string(dict* cur, dict* start, char* str)
 {
     static int strpos = 0;
-    static bool isTopCall = true;
+   //  bool isTopCall = true;
     if (cur == NULL || start == NULL) {
         return NULL;
     }
     // base case
     if (cur == start) {
-        if (isTopCall) {
+      //   if (isTopCall) {
             strpos = 0;
-        }
+      //   }
         return NULL;
     }
-    if (isTopCall) {
-        strpos = 0;
-    }
+   //  if (isTopCall) {
+   //      strpos = 0;
+   //  }
     char c = dict_to_char(cur);
     // recursive call
     if (cur->up) {
-        isTopCall = false;
+      //   isTopCall = false;
         build_string(cur->up, start, str);
-        isTopCall = true;
+      //   isTopCall = true;
     }
+    // append
     str[strpos++] = c;
     str[strpos] = '\0';
     return str;

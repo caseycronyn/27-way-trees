@@ -44,3 +44,6 @@ int on_route(dict* lp, dict *sp);
 
 // return node position from terminal in sd if node exists within, else -1
 int node_shared(dict* node, dict* sd);
+
+// on da tino
+dict* add_letters(dict* c, const char* w);
