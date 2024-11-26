@@ -77,13 +77,9 @@ int char_to_ind(char a)
 
 void dict_free(dict** d)
 {
-   // base case
-   if ((*d)->terminal) {
-      free(*d);
-      *d = NULL;
+   if (*d == NULL) {
       return;
    }
-   // loop through all letters for all nodes
    for (int i = 0; i < ALPHA; i++) {
       if ((*d)->dwn[i] != NULL) {
          dict_free(&((*d)->dwn[i]));
@@ -310,7 +306,7 @@ char dict_to_char(dict * d)
    if (d == NULL) {
       return -1;
    }
-   int pos;
+   int pos = 0;
    char c;
    dict * prev;
    prev = d->up;
