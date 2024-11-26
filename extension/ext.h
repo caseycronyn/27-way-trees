@@ -57,3 +57,5 @@ void dict_free(dict** p);
 int dict_mostcommon(const dict* p);
 
 void test(void);
+
+void print_dict_state(const dict* p);

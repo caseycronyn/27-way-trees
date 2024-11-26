@@ -1,6 +1,66 @@
-#include "bst.h"
+#include "ext.h"
 
-// Function to create a new node
+#define BALANCE_THRESHOLD 1000
+
+void print_tree_state(struct node* root, int depth) {
+    if (root == NULL) return;
+
+    // traverse left subtree
+    print_tree_state(root->left_child, depth + 1);
+
+    // print current node's word, frequency, and depth
+    // printf("Word: '%s', Frequency: %d, Depth: %d\n", root->word, root->frequency, depth);
+
+    // traverse right subtree
+    print_tree_state(root->right_child, depth + 1);
+}
+
+// example usage function to print entire tree state
+void print_dict_state(const dict* p) {
+    if (!p || !p->root) {
+        printf("Dictionary is empty.\n");
+        return;
+    }
+    // printf("Printing tree state:\n");
+    print_tree_state(p->root, 0);
+}
+
+void store_in_order(struct node* root, struct node** nodes, int* index) {
+    if (root == NULL) return;
+    store_in_order(root->left_child, nodes, index);
+    nodes[(*index)++] = root;
+    store_in_order(root->right_child, nodes, index);
+}
+
+// helper function to construct a balanced BST from sorted nodes
+struct node* build_balanced_bst(struct node** nodes, int start, int end) {
+    if (start > end) return NULL;
+    int mid = (start + end) / 2;
+    struct node* root = nodes[mid];
+    root->left_child = build_balanced_bst(nodes, start, mid - 1);
+    root->right_child = build_balanced_bst(nodes, mid + 1, end);
+    return root;
+}
+
+// existing dict_balance function
+void dict_balance(dict* p) {
+    if (!p || !p->root) return;
+
+    int node_count = p->node_count;
+    struct node** nodes = malloc(node_count * sizeof(struct node*));
+    if (!nodes) {
+        perror("Failed to allocate memory for node array");
+        return;
+    }
+
+    int index = 0;
+    store_in_order(p->root, nodes, &index);
+    p->root = build_balanced_bst(nodes, 0, node_count - 1);
+
+    free(nodes);
+}
+
+// function to create a new node
 struct node* new_node(const char *str) {
     struct node *temp = malloc(sizeof(struct node));
     if (!temp) {
@@ -19,10 +79,10 @@ struct node* new_node(const char *str) {
     temp->frequency = 1;
     temp->left_child = NULL;
     temp->right_child = NULL;
+
     return temp;
 }
 
-// Initialize the dictionary
 dict* dict_init(void) {
     dict *d = malloc(sizeof(dict));
     if (!d) {
@@ -35,14 +95,12 @@ dict* dict_init(void) {
     return d;
 }
 
-// Helper function to make strings case-insensitive
 void to_lowercase(char *str) {
     for (; *str; ++str) {
         *str = tolower(*str);
     }
 }
 
-// Recursive function to add a word to the BST
 struct node* insert(struct node *root, const char *str, int *node_count, bool *is_new_word) {
     if (root == NULL) {
         (*node_count)++;
@@ -53,7 +111,8 @@ struct node* insert(struct node *root, const char *str, int *node_count, bool *i
     int cmp = strcmp(str, root->word);
     if (cmp == 0) {
         root->frequency++;
-        *is_new_word = false;  // The word already exists
+        // the word already exists
+        *is_new_word = false;  
     } else if (cmp > 0) {
         root->right_child = insert(root->right_child, str, node_count, is_new_word);
     } else {
@@ -62,9 +121,9 @@ struct node* insert(struct node *root, const char *str, int *node_count, bool *i
     return root;
 }
 
-// Add a word to the dictionary
 bool dict_addword(dict* p, const char* str) {
     if (!p || !str) return false;
+
     char *lower_str = malloc(strlen(str) + 1);
     if (!lower_str) {
         perror("Failed to allocate memory for lower_str");
@@ -76,12 +135,23 @@ bool dict_addword(dict* p, const char* str) {
     bool is_new_word = false;
     p->root = insert(p->root, lower_str, &p->node_count, &is_new_word);
     p->word_count++;
+
     free(lower_str);
-    
+
+    // use a separate counter to decide when to balance
+    static int insertion_count = 0;
+    insertion_count++;
+
+    // balance the tree if the threshold is reached
+    if (insertion_count >= BALANCE_THRESHOLD) {
+        dict_balance(p);
+        // reset insertion counter after balancing
+        insertion_count = 0;  
+    }
+
     return is_new_word;
 }
 
-// Search for a word in the BST
 struct node* search(struct node *root, const char *str) {
     if (root == NULL) return NULL;
 
@@ -91,7 +161,6 @@ struct node* search(struct node *root, const char *str) {
     else return search(root->left_child, str);
 }
 
-// Check if a word is spelled correctly (exists in the dictionary)
 dict* dict_spell(const dict* p, const char* str) {
     if (!p || !str) return NULL;
     char *lower_str = malloc(strlen(str) + 1);
@@ -106,17 +175,16 @@ dict* dict_spell(const dict* p, const char* str) {
     return result ? (dict*)p : NULL;
 }
 
-// Count nodes in the dictionary
 int dict_nodecount(const dict* p) {
-    return p ? p->node_count : 0;
+    int count = p ? p->node_count : 0;
+    return count;
 }
 
-// Count total words in the dictionary
 int dict_wordcount(const dict* p) {
-    return p ? p->word_count : 0;
+    int count = p ? p->word_count : 0;
+    return count;
 }
 
-// Find the most common word in the dictionary
 void find_most_common(struct node *root, struct node **most_common) {
     if (root == NULL) return;
     if (*most_common == NULL || root->frequency > (*most_common)->frequency) {
@@ -133,7 +201,6 @@ int dict_mostcommon(const dict* p) {
     return most_common ? most_common->frequency : 0;
 }
 
-// Free the nodes in the BST
 void free_nodes(struct node *root) {
     if (root == NULL) return;
     free_nodes(root->left_child);
@@ -142,7 +209,7 @@ void free_nodes(struct node *root) {
     free(root);
 }
 
-// Free the dictionary
+// free the dictionary
 void dict_free(dict** p) {
     if (p && *p) {
         free_nodes((*p)->root);
@@ -151,7 +218,13 @@ void dict_free(dict** p) {
     }
 }
 
-
 void test(void) {
-    // Implement any test logic if needed
+    dict* my_dict = dict_init();
+    dict_addword(my_dict, "apple");
+    dict_addword(my_dict, "banana");
+    dict_addword(my_dict, "cherry");
+    dict_addword(my_dict, "date");
+    dict_addword(my_dict, "elderberry");
+    print_dict_state(my_dict);
+    dict_free(&my_dict);
 }
