@@ -21,7 +21,7 @@ int main(void) {
         "Words/jane_austin.txt", "Words/34words.txt", "Words/h-of-d.txt", 
         "Words/eng_370k_shuffle.txt", "Words/wordle.txt"
     };
-    int nodec[DICTFILES] = {0};  // Placeholder for node counts
+    // int nodec[DICTFILES] = {0};  // Placeholder for node counts
     int mostc[DICTFILES] = {0};  // Placeholder for most common word occurrences
 
     dict* dcts[DICTFILES];  // Array of dictionary pointers
@@ -49,8 +49,8 @@ int main(void) {
             }
             fclose(fp);
             // Placeholder values: adjust these as necessary
-            nodec[i] = dict_nodecount(d);
-            mostc[i] = dict_mostcommon(d);
+            // nodec[i] = dict_nodecount(d);
+            // mostc[i] = dict_mostcommon(d);
             l++;
         }
     }
