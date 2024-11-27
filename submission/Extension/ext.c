@@ -104,7 +104,7 @@ struct node* insert(struct node* root, const char* str,
    if (cmp == 0) {
       root->freq++;
       *is_new_word = false;
-   // recursive calls on both sides
+      // recursive calls on both sides
    } else if (cmp > 0) {
       root->r =
           insert(root->r, str, node_count, is_new_word);
@@ -153,7 +153,7 @@ struct node* search(struct node* root, const char* str)
    // base
    if (cmp == 0) {
       return root;
-   // recursive calls on r/ l
+      // recursive calls on r/ l
    } else if (cmp > 0) {
       return search(root->r, str);
    } else {
@@ -257,8 +257,8 @@ void print_tree_state(struct node* root, int depth)
 {
    if (root == NULL) return;
    print_tree_state(root->l, depth + 1);
-   printf("word: '%s', depth: %d, freq: %d\n",
-          root->word, depth, root->freq);
+   printf("word: '%s', depth: %d, freq: %d\n", root->word,
+          depth, root->freq);
    print_tree_state(root->r, depth + 1);
 }
 

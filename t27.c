@@ -9,72 +9,69 @@ Adds letters in string 'w' to dict pointer 'c'
 dict* add_letters(dict* c, const char* w);
 
 /*
-Adds a letter to the tree.
-Allocates space. Returns pointer to added letter. Returns
-NULL if p is null.
+Adds a letter to the tree. Allocates space. Returns pointer
+to added letter. Returns NULL if p is null.
 */
-dict* add_letter(dict *p, int idx);
+dict* add_letter(dict* p, int idx);
 
 /*
-Convert a character to index 0-26.
-Character 27 is the apostrophe. Letters can be upper or
-lower case. Returns -1 if the character is not valid.
+Convert a character to index 0-26. Character 27 is the
+apostrophe. Letters can be upper or lower case. Returns -1
+if the character is not valid.
 */
 int char_to_ind(char a);
 
 /*
-Returns the length of a word.
-Takes a pointer to the terminal node of a word.
+Returns the length of a word. Takes a pointer to the
+terminal node of a word.
 */
 int dict_length(dict* p);
 
 /*
-Finds a related route if it exists.
-Takes the terminal nodes of two words. If one is a
-substring of the other, or they branch off from the same
-substring, then the distance between the two nodes is
-returned. Else -1 is returned.
+Finds a related route if it exists. Takes the terminal nodes
+of two words. If one is a substring of the other, or they
+branch off from the same substring, then the distance
+between the two nodes is returned. Else -1 is returned.
 */
-int related_route(dict* lp, dict *sp);
+int related_route(dict* lp, dict* sp);
 
 /*
-Finds distance from terminal to 'node' in 'sd'.
-Returns -1 if not found.
+Finds distance from terminal to 'node' in 'sd'. Returns -1
+if not found.
 */
 int node_shared(dict* node, dict* sd);
 
 /*
-Finds the most frequent word ending.
-Returns a dict pointer to first terminal node with 'max'
-frequency. Returns NULL if not found.
+Finds the most frequent word ending. Returns a dict pointer
+to first terminal node with 'max' frequency. Returns NULL if
+not found.
 */
 dict* most_freq_end(dict* cur, int max);
 
 /*
-Converts a node to it's word as a string.
-Uses pointers to terminal node 'cur' and start node.
-Returns NULL either pointer is NULL.
+Converts a node to it's word as a string. Uses pointers to
+terminal node 'cur' and start node. Returns NULL either
+pointer is NULL.
 */
 char* build_string(dict* cur, dict* start, char* str);
 
 /*
-Converts a dict pointer to it's char value.
-Returns -1 if 'd' is NULL.
+Converts a dict pointer to it's char value. Returns -1 if
+'d' is NULL.
 */
-char dict_to_char(dict * d);
+char dict_to_char(dict* d);
 
 /*
-Converts an index to a char.
-Letters become lower case. Returns -1 if 'a' is not valid.
+Converts an index to a char. Letters become lower case.
+Returns -1 if 'a' is not valid.
 */
 char ind_to_char(int a);
 
-
 dict* dict_init(void)
 {
-   dict *head = calloc(1, sizeof(dict));
+   dict* head = calloc(1, sizeof(dict));
    if (head == NULL) {
-      printf("error: pointer is null\n");
+      fprintf(stderr, "error: pointer is null\n");
       exit(EXIT_FAILURE);
    }
    return head;
@@ -82,15 +79,14 @@ dict* dict_init(void)
 
 bool dict_addword(dict* p, const char* wd)
 {
-   if (p== NULL || wd == NULL) {
+   if (p == NULL || wd == NULL) {
       return false;
    }
-   dict *cur = add_letters(p, wd);
+   dict* cur = add_letters(p, wd);
    // first occurence
    if (!cur->terminal) {
       cur->terminal = true;
-   }
-   else {
+   } else {
       return false;
    }
    return true;
@@ -109,7 +105,7 @@ int dict_nodecount(const dict* p)
          nodes += dict_nodecount(p->dwn[i]);
       }
    }
-   return nodes+1;
+   return nodes + 1;
 }
 
 int dict_wordcount(const dict* p)
@@ -137,7 +133,7 @@ dict* dict_spell(const dict* p, const char* str)
       return NULL;
    }
    int idx;
-   dict *cur = (dict *)p;
+   dict* cur = (dict*)p;
    int length = strlen(str);
    for (int i = 0; i < length; i++) {
       // if valid character
@@ -185,7 +181,8 @@ int dict_mostcommon(const dict* p)
          call = dict_mostcommon(p->dwn[i]);
          mo_cur_call = (cur > call) ? cur : call;
          // update mo_ov if latest call is more
-         mo_ov = (mo_cur_call > mo_ov) ? mo_cur_call : mo_ov;
+         mo_ov =
+             (mo_cur_call > mo_ov) ? mo_cur_call : mo_ov;
       }
    }
    return mo_ov;
@@ -212,9 +209,10 @@ unsigned dict_cmp(dict* p1, dict* p2)
    return l1 + l2;
 }
 
-void dict_autocomplete(const dict* p, const char* wd, char* ret)
+void dict_autocomplete(const dict* p, const char* wd,
+                       char* ret)
 {
-   dict * cur = (dict *)p;
+   dict* cur = (dict*)p;
    if (cur == NULL) {
       return;
    }
@@ -258,9 +256,9 @@ dict* add_letters(dict* c, const char* w)
    return c;
 }
 
-dict* add_letter(dict *p, int idx)
+dict* add_letter(dict* p, int idx)
 {
-   dict *letter = calloc(1, sizeof(dict));
+   dict* letter = calloc(1, sizeof(dict));
    if (letter == NULL) {
       return NULL;
    }
@@ -273,14 +271,11 @@ int char_to_ind(char a)
 {
    if (a == '\'') {
       return APOSPOS;
-   }
-   else if (isupper(a)) {
+   } else if (isupper(a)) {
       return a - 'A';
-   }
-   else if (islower(a)) {
+   } else if (islower(a)) {
       return a - 'a';
-   }
-   else {
+   } else {
       return -1;
    }
 }
@@ -295,7 +290,7 @@ int dict_length(dict* p)
    return l;
 }
 
-int related_route(dict* ld, dict *sd)
+int related_route(dict* ld, dict* sd)
 {
    int a = 0;
    int b = 0;
@@ -341,7 +336,7 @@ dict* most_freq_end(dict* cur, int max)
          // recursive. returns first match
          temp = most_freq_end(cur->dwn[i], max);
          if (temp != NULL) {
-               return temp;
+            return temp;
          }
       }
    }
@@ -350,34 +345,34 @@ dict* most_freq_end(dict* cur, int max)
 
 char* build_string(dict* cur, dict* start, char* str)
 {
-    static int strpos = 0;
-    if (cur == NULL || start == NULL) {
-        return NULL;
-    }
-    // base case
-    if (cur == start) {
-            strpos = 0;
-        return NULL;
-    }
-    char c = dict_to_char(cur);
-    // recursive call
-    if (cur->up) {
-        build_string(cur->up, start, str);
-    }
-    // append
-    str[strpos++] = c;
-    str[strpos] = '\0';
-    return str;
+   static int strpos = 0;
+   if (cur == NULL || start == NULL) {
+      return NULL;
+   }
+   // base case
+   if (cur == start) {
+      strpos = 0;
+      return NULL;
+   }
+   char c = dict_to_char(cur);
+   // recursive call
+   if (cur->up) {
+      build_string(cur->up, start, str);
+   }
+   // append
+   str[strpos++] = c;
+   str[strpos] = '\0';
+   return str;
 }
 
-char dict_to_char(dict * d)
+char dict_to_char(dict* d)
 {
    if (d == NULL) {
       return -1;
    }
    int pos = 0;
    // find index of node
-   dict * prev = d->up;
+   dict* prev = d->up;
    for (int i = 0; i < ALPHA; i++) {
       if (prev && prev->dwn[i] == d) {
          pos = i;
@@ -391,11 +386,9 @@ char ind_to_char(int ch)
 {
    if ((ch >= 0) && (ch < APOSPOS)) {
       return ch + 'a';
-   }
-   else if (ch == APOSPOS) {
+   } else if (ch == APOSPOS) {
       return '\'';
-   }
-   else {
+   } else {
       return -1;
    }
 }
