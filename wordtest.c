@@ -27,7 +27,7 @@ int main(void) {
     dict* dcts[DICTFILES];  // Array of dictionary pointers
 
     int l = 0;
-    while (l<1000) {
+    while (l<1) {
         for(int i = 0; i < DICTFILES; i++) {
             dict* d = dict_init();
             dcts[i] = d;  
