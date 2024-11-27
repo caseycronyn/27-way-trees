@@ -5,19 +5,17 @@
 #include <string.h>
 #include <ctype.h>
 
-// Define the node structure
 struct node {
-    char *word;
-    int frequency;
-    struct node *right_child;
-    struct node *left_child;
+   char *word;
+   int freq;
+   struct node *r;
+   struct node *l;
 };
 
-// Define the dictionary structure
 typedef struct {
-    struct node *root;
-    int node_count;
-    int word_count;
+   struct node *root;
+   int node_count;
+   int word_count;
 } dict;
 
 // Creates new dictionary
@@ -59,3 +57,8 @@ int dict_mostcommon(const dict* p);
 void test(void);
 
 void print_dict_state(const dict* p);
+
+
+void store_in_order(struct node* root, struct node** nodes, int* index);
+
+struct node* build_balanced_bst(struct node** nodes, int start, int end);

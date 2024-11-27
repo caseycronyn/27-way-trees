@@ -19,3 +19,6 @@ rund: ext_d
 
 clean:
 	rm -f ext ext_d
+
+extt: ext.c wordtest.c
+	gcc ..wordtest.c ext.c $(OPTIM) -o extt
