@@ -213,6 +213,7 @@ int main(void)
    assert(dict_cmp(p1, p2)==10);
    dict_free(&d);
 
+
    // Free up all those dictionaries
    for(int i=0; i<DICTFILES; i++){
       dict_free(&dcts[i]);

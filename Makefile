@@ -2,15 +2,14 @@ WARNS := -Wall -Wextra -Wfloat-equal -Wvla -std=c99 -Wpedantic
 DEBUG := $(WARNS) -fsanitize=undefined -fsanitize=address -g3
 OPTIM := $(WARNS) -O3
 .PHONY: all run rund clean
-COMPILER := gcc
 
 all: t27 t27_d
 
 t27: t27.c t27.h driver.c
-	$(COMPILER) driver.c t27.c $(OPTIM) -o t27
+	gcc driver.c t27.c $(OPTIM) -o t27
 
 t27_d: t27.c t27.h driver.c
-	$(COMPILER) driver.c t27.c $(DEBUG) -o t27_d
+	gcc driver.c t27.c $(DEBUG) -o t27_d
 
 run: t27
 	./t27
@@ -18,5 +17,8 @@ run: t27
 rund: t27_d
 	./t27_d
 
+ext: Extension/ext.c ./driverext.c Extension/ext.h
+	gcc driverext.c Extension/ext.c -IExtension -I.. -I. $(OPTIM) -o ext
+
 clean:
-	rm -f t27 t27_d
+	rm -f t27 t27_d ext

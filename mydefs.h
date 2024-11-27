@@ -2,48 +2,69 @@
 #define MAXSTR 50
 
 /*
-adds a letter to the tree, allocating space.
-returns pointer to added letter
-called by add_word
+Adds letters in string 'w' to dict pointer 'c'
 */
-dict *add_letter(dict *p, int idx);
+dict* add_letters(dict* c, const char* w);
 
 /*
-convert a character to index 0-26
-character 27 is apostrophe " ' "
-case insensitive
-return -1 if invalid character
+Adds a letter to the tree.
+Allocates space. Returns pointer to added letter. Returns
+NULL if p is null.
+*/
+dict* add_letter(dict *p, int idx);
+
+/*
+Convert a character to index 0-26.
+Character 27 is the apostrophe. Letters can be upper or
+lower case. Returns -1 if the character is not valid.
 */
 int char_to_ind(char a);
 
-// print the emory addresses of the dictionary->down
-// void print_addresses(dict * d);
-
-// finds word. returns false if not found
-bool word_is_found(const dict* p, char c);
-
-// returns pointer to node of most frequent word ending based on starting node and max frequency. return null if it fails
-dict* most_freq_end(dict* cur, int max);
-
-// builds string in reverse
-char* build_string(dict* cur, dict* start, char* str);
-
-// on the tin
-// char* reverse_string(char* str);
-
-// indices to char.
-char ind_to_char(int a);
-
-// given a dict *, return it's character. -1 if error
-char dict_to_char(dict * d);
-
+/*
+Returns the length of a word.
+Takes a pointer to the terminal node of a word.
+*/
 int dict_length(dict* p);
 
-// calculates if the route is on the same branch or branches off from the same one. -1 for false
-int on_route(dict* lp, dict *sp);
+/*
+Finds a related route if it exists.
+Takes the terminal nodes of two words. If one is a
+substring of the other, or they branch off from the same
+substring, then the distance between the two nodes is
+returned. Else -1 is returned.
+*/
+int related_route(dict* lp, dict *sp);
 
-// return node position from terminal in sd if node exists within, else -1
+/*
+Finds distance from terminal to 'node' in 'sd'.
+Returns -1 if not found.
+*/
 int node_shared(dict* node, dict* sd);
 
-// on da tino
-dict* add_letters(dict* c, const char* w);
+/*
+Finds the most frequent word ending.
+Returns a dict pointer to first terminal node with 'max'
+frequency. Returns NULL if not found.
+*/
+dict* most_freq_end(dict* cur, int max);
+
+/*
+Converts a node to it's word as a string.
+Uses pointers to terminal node 'cur' and start node.
+Returns NULL either pointer is NULL.
+*/
+char* build_string(dict* cur, dict* start, char* str);
+
+/*
+Converts a dict pointer to it's char value.
+Returns -1 if 'd' is NULL.
+*/
+char dict_to_char(dict * d);
+
+/*
+Converts an index to a char.
+Letters become lower case. Returns -1 if 'a' is not valid.
+*/
+char ind_to_char(int a);
+
+
