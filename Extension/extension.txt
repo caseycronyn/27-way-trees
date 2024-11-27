@@ -1,3 +1,19 @@
-For my extension, I decided to use a binary tree. I started out with an unbalanced tree, but realised I was making the worst case run time as two of the text files were sorted. So I decided to implement a simple balancing method.
+For the extension, I chose a binary search tree. Initially, the BST implementation was unbalanced, which resulted in poor performance due to the sorted nature of some test input files nearing the worst case O(n). To address this, a simple balancing mechanism was used, improving the worst-case runtime. This involves sorting the nodes, then starting the tree with the root at the centre and halving out in each direction.
 
-I decided to use this method as I was interested to see the comparison between a binary tree vs a trie implementation, as they are both such common data structures in computer science. I predicted that the binary tree would be slower, with a O(n) worst case, but trading off better memory usage against the trie. I implemented some tests to see if this held true.
+The decision to use a binary tree aimed to contrast its efficiency and memory usage with the trie. While tries are optimized for prefix-based searching such as that of a dictionary, binary trees offer a more generalized structure with simpler implementation and potentially better memory efficiency for specific cases. I hypothesized before writing the inmplementation that the trie would outperform the BST in terms of speed, but may use more memory.
+
+Tests were conducted using 17 text files in the Words directory, containing 3,470,560 unique words and 1,606,389 total words. Iterative loops simulated scenarios with increasing word counts, enabling a direct performance comparison. Both implementations were benchmarked using identical datasets and operations. The tests were carried out on my laptop, and serve to give a rough idea of run time for both.
+
+The performance results are as follows:
+
+| Loops | Words Added | Trie Time (s) | BST Time (s) |
+|-------|-------------|---------------|--------------|
+| 1     | 1606389     | 0.75          | 5.93         |
+| 10    | 16063890    | 0.76          | 5.80         |
+| 20    | 32127780    | 1.23          | 13.05        |
+| 100   | 160638900   | 3.11          | 41.65        |
+| 1000  | 1606389000  | 30.08         | 434.87       |
+
+The trie consistently demonstrated superior performance, particularly in scenarios with larger datasets. This is attributed to its logarithmic depth traversal for prefix-based insertions and lookups. In contrast, the BST exhibited slower performance. I believe a large part of this is due to the sorting.
+
+The trie is the preferred data structure for this specific application, trading higher memory usage for significant speed improvements. I also found the implementation of balancing the tree to be far more complex. However, the BST, with its simplicity and potential memory efficiency, remains a viable option for memory-constrained applications or unsorted datasets.

@@ -21,4 +21,20 @@ ext: Extension/ext.c ./driverext.c Extension/ext.h
 	gcc driverext.c Extension/ext.c -IExtension -I.. -I. $(OPTIM) -o ext
 
 clean:
+<<<<<<< HEAD
 	rm -f t27 t27_d ext
+=======
+	rm -f t27 t27_d
+
+t27t: t27.c t27.h wordtest.c
+	$(COMPILER) wordtest.c t27.c $(OPTIM) -o t27t
+
+ext: ext.c driverext.c
+	gcc driverext.c ext.c $(OPTIM) -o ext
+
+ext_d: ext.c driverext.c
+	gcc driverext.c ext.c $(DEBUG) -o ext_d
+
+extt: ext.c wordtest.c
+	gcc wordtest.c ext.c $(OPTIM) -o extt
+>>>>>>> refs/remotes/origin/main

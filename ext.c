@@ -2,30 +2,6 @@
 
 #define BALANCELIM 1000
 
-void store_in_order(struct node* root, struct node** nodes, int* index) {
-    // base
-    if (root == NULL) {
-        return;
-    }
-    // recursive
-    store_in_order(root->left_child, nodes, index);
-    nodes[(*index)++] = root;
-    store_in_order(root->right_child, nodes, index);
-}
-
-struct node* build_balanced_bst(struct node** nodes, int start, int end) {
-    // base
-    if (start > end) {
-        return NULL;
-    }
-    int mid = (start + end) / 2;
-    struct node* root = nodes[mid];
-    // recursive
-    root->left_child = build_balanced_bst(nodes, start, mid - 1);
-    root->right_child = build_balanced_bst(nodes, mid + 1, end);
-    return root;
-}
-
 void dict_balance(dict* p) {
     if (p == NULL || p->root == NULL) {
         return;
@@ -42,30 +18,54 @@ void dict_balance(dict* p) {
     free(nodes);
 }
 
+void store_in_order(struct node* root, struct node** nodes, int* index) {
+    // base
+    if (root == NULL) {
+        return;
+    }
+    // recursive
+    store_in_order(root->l, nodes, index);
+    nodes[(*index)++] = root;
+    store_in_order(root->r, nodes, index);
+}
+
+struct node* build_balanced_bst(struct node** nodes, int start, int end) {
+    // base
+    if (start > end) {
+        return NULL;
+    }
+    int mid = (start + end) / 2;
+    struct node* root = nodes[mid];
+    // recursive
+    root->l = build_balanced_bst(nodes, start, mid - 1);
+    root->r = build_balanced_bst(nodes, mid + 1, end);
+    return root;
+}
+
 struct node* new_node(const char *str) {
     struct node *temp = malloc(sizeof(struct node));
-    if (!temp) {
-        perror("Failed to allocate memory for new node");
+    if (temp == NULL) {
+        printf("error: temp is NULL");
         exit(EXIT_FAILURE);
     }
     temp->word = malloc(strlen(str) + 1);
-    if (!temp->word) {
-        perror("Failed to allocate memory for word");
+    if (temp->word == NULL) {
+        printf("error: temp->word is NULL");
         free(temp);
         exit(EXIT_FAILURE);
     }
     strcpy(temp->word, str);
-    temp->frequency = 1;
-    temp->left_child = NULL;
-    temp->right_child = NULL;
+    temp->freq = 1;
+    temp->l = NULL;
+    temp->r = NULL;
 
     return temp;
 }
 
 dict* dict_init(void) {
     dict *d = malloc(sizeof(dict));
-    if (!d) {
-        perror("Failed to allocate memory for dictionary");
+    if (d == NULL) {
+        printf("error: d is NULL");
         exit(EXIT_FAILURE);
     }
     d->root = NULL;
@@ -88,32 +88,29 @@ struct node* insert(struct node *root, const char *str, int *node_count, bool *i
     }
     int cmp = strcmp(str, root->word);
     if (cmp == 0) {
-        root->frequency++;
+        root->freq++;
         *is_new_word = false;  
     } else if (cmp > 0) {
-        root->right_child = insert(root->right_child, str, 
-                                    node_count, is_new_word);
+        root->r = insert(root->r, str, node_count, is_new_word);
     } else {
-        root->left_child = insert(root->left_child, str, 
-                                    node_count, is_new_word);
+        root->l = insert(root->l, str, node_count, is_new_word);
     }
     return root;
 }
 
 bool dict_addword(dict* p, const char* str) {
-    if (!p || !str) return false;
+    if (p == NULL || str == NULL) return false;
 
     char *lower_str = malloc(strlen(str) + 1);
-    if (!lower_str) {
-        perror("Failed to allocate memory for lower_str");
+    if (lower_str == NULL) {
+        printf("error: lower_str is NULL");
         return false;
     }
     strcpy(lower_str, str);
     to_lowercase(lower_str);
 
     bool is_new_word = false;
-    p->root = insert(p->root, lower_str, &p->node_count, 
-                                            &is_new_word);
+    p->root = insert(p->root, lower_str, &p->node_count, &is_new_word);
     p->word_count++;
 
     free(lower_str);
@@ -130,31 +127,47 @@ bool dict_addword(dict* p, const char* str) {
 }
 
 struct node* search(struct node *root, const char *str) {
-    if (root == NULL) return NULL;
-
+    if (root == NULL) {
+        return NULL;
+    }
     int cmp = strcmp(str, root->word);
-    if (cmp == 0) return root;
-    else if (cmp > 0) return search(root->right_child, str);
-    else return search(root->left_child, str);
+    if (cmp == 0) {
+        return root;
+    }
+    else if (cmp > 0) {
+        return search(root->r, str);
+    }
+    else {
+        return search(root->l, str);
+    }
 }
 
 dict* dict_spell(const dict* p, const char* str) {
-    if (!p || !str) return NULL;
+    if (p == NULL || str == NULL) {
+        return NULL;
+    }
     char *lower_str = malloc(strlen(str) + 1);
-    if (!lower_str) {
-        perror("Failed to allocate memory for lower_str");
+    if (lower_str == NULL) {
+        printf("error: lower_str is NULL");
         return NULL;
     }
     strcpy(lower_str, str);
     to_lowercase(lower_str);
     struct node* result = search(p->root, lower_str);
     free(lower_str);
-    return result ? (dict*)p : NULL;
+    if (result) {
+        return (dict*)p;
+    }
+    else {
+        return NULL;
+    }
 }
 
 int dict_nodecount(const dict* p) {
-    int count = p ? p->node_count : 0;
-    return count;
+    if (p) {
+        return p->node_count;
+    }
+    return 0;
 }
 
 int dict_wordcount(const dict* p) {
@@ -162,28 +175,35 @@ int dict_wordcount(const dict* p) {
     return count;
 }
 
-void find_most_common(struct node *root, 
-                        struct node **most_common) {
-    if (root == NULL) return;
-    if (*most_common == NULL || 
-        root->frequency > (*most_common)->frequency) {
+void find_most_common(struct node *root, struct node **most_common) {
+    if (root == NULL) {
+        return;
+    }
+    if (*most_common == NULL || root->freq > (*most_common)->freq) {
         *most_common = root;
     }
-    find_most_common(root->left_child, most_common);
-    find_most_common(root->right_child, most_common);
+    find_most_common(root->l, most_common);
+    find_most_common(root->r, most_common);
 }
 
 int dict_mostcommon(const dict* p) {
-    if (!p || !p->root) return 0;
+    if (p == NULL || p->root == NULL) {
+        return 0;
+    }
     struct node *most_common = NULL;
     find_most_common(p->root, &most_common);
-    return most_common ? most_common->frequency : 0;
+    if (most_common) {
+        return most_common->freq;
+    }
+    return 0;
 }
 
 void free_nodes(struct node *root) {
-    if (root == NULL) return;
-    free_nodes(root->left_child);
-    free_nodes(root->right_child);
+    if (root == NULL) {
+        return;
+    }
+    free_nodes(root->l);
+    free_nodes(root->r);
     free(root->word);
     free(root);
 }
@@ -197,12 +217,11 @@ void dict_free(dict** p) {
 }
 
 void print_tree_state(struct node* root, int depth) { if (root == NULL) return;
-    print_tree_state(root->left_child, depth + 1);
+    print_tree_state(root->l, depth + 1);
 
-    printf("Word: '%s', Frequency: %d, Depth: %d\n", root->word, root->frequency, depth);
+    printf("Word: '%s', Frequency: %d, Depth: %d\n", root->word, root->freq, depth);
 
-    // right
-    print_tree_state(root->right_child, depth + 1);
+    print_tree_state(root->r, depth + 1);
 }
 
 void print_dict_state(const dict* p) {
