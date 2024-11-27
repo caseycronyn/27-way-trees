@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "t27.h"
 #include <time.h>
+#include "ext.h"
 
 #define MAXSTR 100
 #define DICTFILES 17
+#define LOOPS 1
 
 int main(void) {
 
@@ -21,13 +22,12 @@ int main(void) {
         "Words/jane_austin.txt", "Words/34words.txt", "Words/h-of-d.txt", 
         "Words/eng_370k_shuffle.txt", "Words/wordle.txt"
     };
-    // int nodec[DICTFILES] = {0};  // Placeholder for node counts
-    int mostc[DICTFILES] = {0};  // Placeholder for most common word occurrences
+    int mostc[DICTFILES] = {0};
 
-    dict* dcts[DICTFILES];  // Array of dictionary pointers
+    dict* dcts[DICTFILES];
 
     int l = 0;
-    while (l<1) {
+    while (l < LOOPS) {
         for(int i = 0; i < DICTFILES; i++) {
             dict* d = dict_init();
             dcts[i] = d;  
@@ -48,9 +48,6 @@ int main(void) {
                 assert(dict_spell(d, str2));
             }
             fclose(fp);
-            // Placeholder values: adjust these as necessary
-            // nodec[i] = dict_nodecount(d);
-            // mostc[i] = dict_mostcommon(d);
             l++;
         }
     }
@@ -61,9 +58,7 @@ int main(void) {
     }
 
     end = clock();
-
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Program took %f seconds to execute. \n", cpu_time_used);
-
     return 0;
 }

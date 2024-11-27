@@ -1,6 +1,16 @@
 #include "ext.h"
 
-#define BALANCELIM 1000
+dict* dict_init(void) {
+    dict *d = malloc(sizeof(dict));
+    if (d == NULL) {
+        printf("error: d is NULL");
+        exit(EXIT_FAILURE);
+    }
+    d->root = NULL;
+    d->node_count = 0;
+    d->word_count = 0;
+    return d;
+}
 
 void dict_balance(dict* p) {
     if (p == NULL || p->root == NULL) {
@@ -9,7 +19,7 @@ void dict_balance(dict* p) {
     int node_count = p->node_count;
     struct node** nodes = malloc(node_count * sizeof(struct node*));
     if (nodes == NULL) {
-        printf("Failed to allocate memory for node array");
+        printf("error: nodes pointer is null");
         return;
     }
     int index = 0;
@@ -60,18 +70,6 @@ struct node* new_node(const char *str) {
     temp->r = NULL;
 
     return temp;
-}
-
-dict* dict_init(void) {
-    dict *d = malloc(sizeof(dict));
-    if (d == NULL) {
-        printf("error: d is NULL");
-        exit(EXIT_FAILURE);
-    }
-    d->root = NULL;
-    d->node_count = 0;
-    d->word_count = 0;
-    return d;
 }
 
 void to_lowercase(char *str) {
