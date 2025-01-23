@@ -46,7 +46,6 @@ void store_in_order(struct node* root, struct node** nodes,
 struct node* build_balanced_bst(struct node** nodes,
                                 int start, int end);
 
-
 // finds node based on target str
 struct node* search(struct node* root, const char* str);
 
@@ -58,3 +57,4 @@ dict* dict_spell(const dict* p, const char* str);
 
 // Same as t27
 void test(void);
+
