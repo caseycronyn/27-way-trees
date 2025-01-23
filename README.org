@@ -1,0 +1,24 @@
+* T27 project
+This repository contains an implementation of the Dictionary Abstract Data Type comparing a 27-Way Tree to a balanced binary tree.
+
+This project was aimed at exploring data structure manipulation and algorithmic efficiency. 
+
+The binary search tree in the best case should be an average of O(log n) for the operations. This makes it theoretically slower than the 27 way tree (trie), as with a size 'k' string it will have an average case of O(k) for insertions and searching. I found the concept of implementing a 'simpler' data structure to do the same task to be an interesting one. I hypothesized before writing the implementation that the trie would outperform the BST in terms of speed as it is a better fit for a common prefix dataset like a dictionary, but it may use more memory.
+
+Initially it was running at it's worst case of O(n) on the sorted files, which was very slow. To address this I used a simple balancing method which improved the worst case, but also increased the compile time. This involved sorting the nodes, then building it from the centre and folding out to build a balanced tree.
+
+Tests were conducted using all 17 text files contained in the Words directory using a test.c file included to give a rough analysis of the asymptotic performance of both data structures on a varied set of word files. LOOPS simulates an increasingly large input size.
+
+The results were as follows:
+
+| Loops | Words Added | Trie Time (s) | BST Time (s) |
+|-------|-------------|---------------|--------------|
+| 1     | 1606389     | 0.75          | 5.93         |
+| 10    | 16063890    | 0.76          | 5.80         |
+| 20    | 32127780    | 1.23          | 13.05        |
+| 100   | 160638900   | 3.11          | 41.65        |
+| 1000  | 1606389000  | 30.08         | 434.87       |
+
+The trie consistently demonstrated superior performance especially as LOOPS approaches infinity.
+
+The trie is the better data structure for a dictionary, with significant performance advantages. I also found the implementation of balancing the binary tree to be more complex in implementation. A next step to improve the BST would be to write a hashing function, which would speed up insertion, deletion and search speed in the tree.
